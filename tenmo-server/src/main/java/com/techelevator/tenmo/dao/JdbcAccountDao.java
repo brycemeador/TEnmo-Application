@@ -15,7 +15,6 @@ public class JdbcAccountDao implements AccountDao {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
     @Override
     public Account getAccount(int id) {
         return null;
