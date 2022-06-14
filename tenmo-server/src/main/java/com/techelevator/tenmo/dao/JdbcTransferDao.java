@@ -1,13 +1,14 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Transfer;
-import com.techelevator.tenmo.model.User;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class JdbcTransferDao implements TransferDao{
 
     private JdbcTemplate jdbcTemplate;
@@ -17,16 +18,21 @@ public class JdbcTransferDao implements TransferDao{
     }
 
 
+
+
     @Override
     public List<Transfer> transferHistory(Long account_id) {
-        List<Transfer> transfersHistory = new ArrayList<>();
+        List<Transfer> transferHistory = new ArrayList<>();
         String sql = "select * from transfer where account_from = ? or account_to = ?";
         SqlRowSet results = jdbcTemplate.queryForRowSet(sql, account_id, account_id);
-        while (results.next(){
+        while (results.next()){
             Transfer history = mapRowToTransfer(results);
-            transfersHistory.add(history);
+            transferHistory.add(history);
         }
+        return transferHistory;
     }
+
+
 
     private Transfer mapRowToTransfer(SqlRowSet results) {
         Transfer transfer = new Transfer();
