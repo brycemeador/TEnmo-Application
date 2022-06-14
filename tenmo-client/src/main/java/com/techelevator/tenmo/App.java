@@ -92,7 +92,7 @@ public class App {
 
 	private void viewCurrentBalance() {
         BigDecimal balance = accountService.getBalance(currentUser);
-        System.out.println("Current balance is: " + balance);
+        System.out.println("Current balance is: $" + balance);
 
     }
 
