@@ -8,6 +8,7 @@ import com.techelevator.tenmo.services.ConsoleService;
 import com.techelevator.util.BasicLogger;
 
 import java.math.BigDecimal;
+import java.util.Formatter;
 
 public class App {
 
@@ -92,8 +93,9 @@ public class App {
 
 	private void viewCurrentBalance() {
         BigDecimal balance = accountService.getBalance(currentUser);
-        System.out.println("Current balance is: " + balance);
-
+        System.out.println("****************************");
+        System.out.println("Current balance is: $" + balance);
+        System.out.println("****************************");
     }
 
 	private void viewTransferHistory() {
