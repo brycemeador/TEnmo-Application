@@ -96,6 +96,7 @@ public class App {
         System.out.println("****************************");
         System.out.println("Current balance is: $" + balance);
         System.out.println("****************************");
+        //testing commit
     }
 
 	private void viewTransferHistory() {
