@@ -27,7 +27,7 @@ public class Transfer {
         return transferID;
     }
 
-    public void setTransferID(Long transferID) {
+    public void setTransferID(Integer transferID) {
         this.transferID = transferID;
     }
 
@@ -35,7 +35,7 @@ public class Transfer {
         return transferTypeId;
     }
 
-    public void setTransferTypeId(Long transferTypeId) {
+    public void setTransferTypeId(Integer transferTypeId) {
         this.transferTypeId = transferTypeId;
     }
 
@@ -43,7 +43,7 @@ public class Transfer {
         return transferStatusId;
     }
 
-    public void setTransferStatusId(Long transferStatusId) {
+    public void setTransferStatusId(Integer transferStatusId) {
         this.transferStatusId = transferStatusId;
     }
 
@@ -51,7 +51,7 @@ public class Transfer {
         return accountFrom;
     }
 
-    public void setAccountFrom(Long accountFrom) {
+    public void setAccountFrom(Integer accountFrom) {
         this.accountFrom = accountFrom;
     }
 
@@ -59,7 +59,7 @@ public class Transfer {
         return accountTo;
     }
 
-    public void setAccountTo(Long accountTo) {
+    public void setAccountTo(Integer accountTo) {
         this.accountTo = accountTo;
     }
 

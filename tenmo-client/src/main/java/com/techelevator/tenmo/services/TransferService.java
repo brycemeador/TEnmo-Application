@@ -29,7 +29,7 @@ public class TransferService {
     public Transfer[] transferHistory(int accountId){
         Transfer[] transfers = null;
         try{
-            transfers = restTemplate.exchange(API_BASE_URL + "/transfers/history/" + accountId, HttpMethod.GET,
+            transfers = restTemplate.exchange(API_BASE_URL + "/transfer/history/" + accountId, HttpMethod.GET,
                     makeAuthEntity(), Transfer[].class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
             e.printStackTrace();
