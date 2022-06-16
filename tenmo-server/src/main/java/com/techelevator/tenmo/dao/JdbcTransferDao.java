@@ -13,10 +13,20 @@ public class JdbcTransferDao implements TransferDao{
 
     private JdbcTemplate jdbcTemplate;
 
-    public JdbcTransferDao(JdbcTemplate jdbcTemplate) {
+    public JdbcTransferDao(JdbcTemplate jdbcTemplate, AccountDao accountDao) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    @Override
+    public boolean transfer(Transfer transfer, int accountFromId, int accountToId) {
+        String sql = "insert into transfer (transfer_id, transfer_type_id, transfer_status_id, account_to, account_from, amount)" +
+                "values (default, ?, ?, ?, ?, ?);" +
+                "update account set balance = balance - ? where account_id = ?;" +
+                "update account set balance = balance + ? where account_id = ?;";
+        return jdbcTemplate.update(sql,transfer.getTransferTypeId(), transfer.getTransferStatusId(),
+                transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount(), transfer.getAmount(),
+                accountFromId, transfer.getAmount(), accountToId) == 0; //idk if this is correct
+    }
 
 
 
