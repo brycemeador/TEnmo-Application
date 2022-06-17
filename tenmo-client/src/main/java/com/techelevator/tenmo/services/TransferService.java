@@ -2,10 +2,8 @@ package com.techelevator.tenmo.services;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
 import com.techelevator.tenmo.model.Transfer;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import com.techelevator.tenmo.model.User;
+import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
@@ -26,16 +24,37 @@ public class TransferService {
         this.authenticatedUser = authenticatedUser;
     }
 
-    public Transfer[] transferHistory(int accountId){
+    public AuthenticatedUser user(){
+        AuthenticatedUser user = new AuthenticatedUser();
+        setToken(user.getToken());
+        setAuthenticatedUser(user);
+        return user;
+    }
+
+    public Transfer[] transferHistory(int accountId, AuthenticatedUser user){
         Transfer[] transfers = null;
+        setToken(user.getToken());
+        setAuthenticatedUser(user);
         try{
             transfers = restTemplate.exchange(API_BASE_URL + "/transfer/history/" + accountId, HttpMethod.GET,
                     makeAuthEntity(), Transfer[].class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
-            e.printStackTrace();
         }
         return transfers;
     }
+
+    public Transfer transfer(int accountId, AuthenticatedUser user){
+        Transfer transfer = null;
+        setToken(user.getToken());
+        setAuthenticatedUser(user);
+        try {
+            transfer = restTemplate.exchange(API_BASE_URL + "/transfer/" + accountId + "/" + accountId,
+                    HttpMethod.POST, makeAuthEntity(), Transfer.class).getBody();
+        } catch (RestClientResponseException | ResourceAccessException e) {
+        }
+        return transfer;
+    }
+
 
 
 

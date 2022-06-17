@@ -1,14 +1,15 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
-import com.techelevator.util.BasicLogger;
+import com.techelevator.tenmo.services.TransferService;
 
 import java.math.BigDecimal;
-import java.util.Formatter;
 
 public class App {
 
@@ -20,6 +21,7 @@ public class App {
     private AuthenticatedUser currentUser;
     private ConsoleService console;
     private AccountService accountService = new AccountService();
+    private TransferService transferService = new TransferService();
 
     public static void main(String[] args) {
         App app = new App();
@@ -93,14 +95,12 @@ public class App {
 
 	private void viewCurrentBalance() {
         BigDecimal balance = accountService.getBalance(currentUser);
-        System.out.println("****************************");
+        System.out.println("\n****************************");
         System.out.println("Current balance is: $" + balance);
         System.out.println("****************************");
     }
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	private void viewPendingRequests() {
@@ -109,9 +109,8 @@ public class App {
 	}
 
 	private void sendBucks() {
-		// TODO Auto-generated method stub
-		
-	}
+
+    }
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub

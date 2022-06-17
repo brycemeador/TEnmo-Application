@@ -1,8 +1,7 @@
 package com.techelevator.tenmo.services;
 
-import com.techelevator.tenmo.model.Account;
 import com.techelevator.tenmo.model.AuthenticatedUser;
-import com.techelevator.util.BasicLogger;
+import com.techelevator.tenmo.model.User;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,6 +20,17 @@ public class AccountService {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public Integer getAccountId(int userId) {
+        Integer accountId = null;
+        try {
+            accountId = restTemplate.exchange(API_BASE_URL + "accountId/" + userId,
+                    HttpMethod.GET,
+                    makeAuthEntity(), Integer.class).getBody();
+        } catch (RestClientResponseException | ResourceAccessException e) {
+        }
+        return accountId;
     }
 
     public BigDecimal getBalance(AuthenticatedUser user) throws RestClientResponseException, ResourceAccessException {

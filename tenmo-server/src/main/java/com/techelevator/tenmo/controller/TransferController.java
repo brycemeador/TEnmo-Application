@@ -1,6 +1,7 @@
 package com.techelevator.tenmo.controller;
 
 import com.techelevator.tenmo.dao.JdbcTransferDao;
+import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.model.Transfer;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -24,9 +25,7 @@ public class TransferController {
     }
 
     @PostMapping("/transfer/{accountFromId}/{accountToId}")
-    public boolean transfer(@RequestBody Transfer transfer, @PathVariable int accountFromId, @PathVariable int accountToId) {
+    public boolean transfer(@RequestBody Transfer transfer, @PathVariable int accountFromId, @PathVariable int accountToId) throws Exception {
         return dao.transfer(transfer, accountFromId, accountToId);
     }
-
-
 }
