@@ -15,6 +15,7 @@ public class TransferService {
     private final RestTemplate restTemplate = new RestTemplate();
     private AuthenticatedUser authenticatedUser;
     private String token;
+    private User user;
 
     public void setToken(String token) {
         this.token = token;
@@ -55,6 +56,30 @@ public class TransferService {
         return transfer;
     }
 
+    public Transfer[] transferList() {
+        Transfer[] output = null;
+        try {
+            output = restTemplate.exchange(API_BASE_URL + "/transfer/" + authenticatedUser, HttpMethod.GET,
+                    makeAuthEntity(), Transfer[].class).getBody();
+            System.out.println("*****transfers*****" +
+                    "ID          From/To        Amount");
+            String fromOrTo = "";
+            String name = "";
+            for (Transfer t : output) {
+                if (authenticatedUser.getUser().getId().equals(t.getAccountFrom()) ) {
+                    fromOrTo = "From: ";
+                    name = user.getUsername();
+                } else {
+                    fromOrTo = "To: ";
+                    name = user.getUsername();
+                }
+            }
+            System.out.println();
+        } catch (Exception e) {
+            System.out.println("Error");
+        }
+        return output;
+    }
 
 
 
