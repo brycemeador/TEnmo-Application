@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,23 +13,28 @@ import java.util.List;
 public class JdbcTransferDao implements TransferDao{
 
     private JdbcTemplate jdbcTemplate;
+    private AccountDao accountDao;
 
-    public JdbcTransferDao(JdbcTemplate jdbcTemplate, AccountDao accountDao) {
+    public JdbcTransferDao(JdbcTemplate jdbcTemplate){
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public boolean transfer(Transfer transfer, int accountFromId, int accountToId) {
+    public boolean transfer(Transfer transfer, int accountFromId, int accountToId) throws Exception {
+        int fromAccountBalance = accountDao.getAccount(accountFromId).getBalance().intValue();
         String sql = "insert into transfer (transfer_id, transfer_type_id, transfer_status_id, account_to, account_from, amount)" +
                 "values (default, ?, ?, ?, ?, ?);" +
                 "update account set balance = balance - ? where account_id = ?;" +
                 "update account set balance = balance + ? where account_id = ?;";
-        return jdbcTemplate.update(sql,transfer.getTransferTypeId(), transfer.getTransferStatusId(),
-                transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount(), transfer.getAmount(),
-                accountFromId, transfer.getAmount(), accountToId) == 0; //idk if this is correct
+        if (transfer.getAmount().intValue() < fromAccountBalance) {
+            throw new Exception("Transfer amount exceeds balance");
+        }
+        else{
+            return jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),
+                    transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount(), transfer.getAmount(),
+                    accountFromId, transfer.getAmount(), accountToId) == 3;
+        }
     }
-
-
 
     @Override
     public List<Transfer> transferHistory(Long account_id) {
