@@ -48,8 +48,6 @@ public class JdbcTransferDao implements TransferDao{
         return transferHistory;
     }
 
-
-
     private Transfer mapRowToTransfer(SqlRowSet results) {
         Transfer transfer = new Transfer();
         transfer.setTransferID(results.getLong("transfer_id"));
