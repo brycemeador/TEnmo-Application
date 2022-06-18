@@ -131,27 +131,31 @@ public class App {
 
         Integer userTo = console.promptForInt("Enter the user ID who you would like to transfer to \n");
         Integer accountIdFrom = accountService.getAccountId(currentUser.getUser().getId(), currentUser);
-        if (accountIdFrom.equals(userTo)) {
-            userTo = console.promptForInt("Cmon now, no infinite money glitch");
-        } else {
-            int amount = console.promptForInt("Enter amount you would like to transfer \n");
-            while (accountService.getBalance(currentUser).intValue() < amount) {
-                amount = console.promptForInt("Amount entered exceeds your balance, please enter a valid amount ");
-                continue;
-            }
-                Integer accountIdTo = userTo;
-
-                transfer.setTransferTypeId(2);
-                transfer.setTransferStatusId(2);
-                transfer.setAccountFrom(accountIdFrom);
-                transfer.setAccountTo(accountIdTo);
-                transfer.setAmount(BigDecimal.valueOf(amount));
-
-                transferService.addTransfer(transfer, accountIdFrom, accountIdTo, currentUser);
-                BigDecimal balance = accountService.getBalance(currentUser);
-                System.out.println("\nYour transfer has been completed, your new balance is: $" + balance);
-
+        while (accountIdFrom.equals(userTo)) {
+            userTo = console.promptForInt("Cmon now, no infinite money glitch\n");
+            continue;
         }
+        //while statement to make sure that you can't transfer to a random number
+        //while(userTo){
+        //}
+        int amount = console.promptForInt("Enter amount you would like to transfer \n");
+        while (accountService.getBalance(currentUser).intValue() < amount) {
+            amount = console.promptForInt("Amount entered exceeds your balance, please enter a valid amount \n");
+            continue;
+        }
+        Integer accountIdTo = userTo;
+
+        transfer.setTransferTypeId(2);
+        transfer.setTransferStatusId(2);
+        transfer.setAccountFrom(accountIdFrom);
+        transfer.setAccountTo(accountIdTo);
+        transfer.setAmount(BigDecimal.valueOf(amount));
+
+        transferService.addTransfer(transfer, accountIdFrom, accountIdTo, currentUser);
+        BigDecimal balance = accountService.getBalance(currentUser);
+        System.out.println("\nYour transfer has been completed, your new balance is: $" + balance);
+
+
     }
 
 	private void requestBucks() {
