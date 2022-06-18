@@ -24,14 +24,14 @@ public class AccountController {
         this.userDao = userDao;
     }
 
-    @GetMapping("account/{id}")
+    @GetMapping("/account/{id}")
     public Account getAccount(@PathVariable int id) {
         return dao.getAccount(id);
     }
 
-    @GetMapping("/accountId/{id}")
-    public Long getAccountId(@PathVariable int id) {
-        return dao.getUserId(id);
+    @GetMapping("/user/{id}")
+    public int getAccountId(@PathVariable int id) {
+        return dao.getAccountId(id);
     }
 
     @GetMapping("/account/balance/{id}")
@@ -43,5 +43,15 @@ public class AccountController {
     public List<User> getAllUsers(){
         List<User> users = userDao.findAll();
         return users;
+    }
+
+    @GetMapping("/accountId/{id}")
+    public int getUserId(@PathVariable int id){
+        return dao.getUserId(id);
+    }
+
+    @GetMapping("/username/{id}")
+    public String getUsername(@PathVariable int id){
+        return userDao.getUsername(id);
     }
 }

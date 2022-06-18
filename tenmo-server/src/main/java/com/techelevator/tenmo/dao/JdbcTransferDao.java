@@ -21,19 +21,13 @@ public class JdbcTransferDao implements TransferDao{
 
     @Override
     public boolean transfer(Transfer transfer, int accountFromId, int accountToId) throws Exception {
-        int fromAccountBalance = accountDao.getAccount(accountFromId).getBalance().intValue();
-        String sql = "insert into transfer (transfer_id, transfer_type_id, transfer_status_id, account_to, account_from, amount)" +
-                "values (default, ?, ?, ?, ?, ?);" +
+        String sql = "insert into transfer (transfer_type_id, transfer_status_id, account_to, account_from, amount)" +
+                "values (?, ?, ?, ?, ?);" +
                 "update account set balance = balance - ? where account_id = ?;" +
                 "update account set balance = balance + ? where account_id = ?;";
-        if (transfer.getAmount().intValue() < fromAccountBalance) {
-            throw new Exception("Transfer amount exceeds balance");
-        }
-        else{
             return jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),
                     transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount(), transfer.getAmount(),
                     accountFromId, transfer.getAmount(), accountToId) == 3;
-        }
     }
 
     @Override

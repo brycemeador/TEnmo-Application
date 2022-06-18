@@ -10,7 +10,9 @@ public interface AccountDao {
 
     Account getAccount(int id);
 
-    Long getUserId(int id);
+    int getAccountId(int id);
+
+    int getUserId(int id);
 
     BigDecimal getBalance(int id);
 

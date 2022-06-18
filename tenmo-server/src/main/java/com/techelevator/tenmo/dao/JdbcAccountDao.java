@@ -22,14 +22,23 @@ public class JdbcAccountDao implements AccountDao {
 
     @Override
     public Account getAccount(int id) {
-        String sql = "select account_id from account where user_id = ?";
-        int accountId = jdbcTemplate.queryForObject(sql, int.class, id);
-        return null;
+        String sql = "select * from account where user_id = ?";
+        Account account = jdbcTemplate.queryForObject(sql, Account.class, id);
+        return account;
     }
 
     @Override
-    public Long getUserId(int id) {
-        return null;
+    public int getAccountId(int id) {
+        String sql = "select account_id from account where user_id = ?";
+        int accountId = jdbcTemplate.queryForObject(sql, int.class, id);
+        return accountId;
+    }
+
+    @Override
+    public int getUserId(int id) {
+        String sql = "select user_id from account where account_id = ?";
+        int userId = jdbcTemplate.queryForObject(sql, int.class, id);
+        return userId;
     }
 
     @Override
