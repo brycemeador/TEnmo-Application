@@ -36,6 +36,7 @@ public class App {
             mainMenu();
         }
     }
+
     private void loginMenu() {
         int menuSelection = -1;
         while (menuSelection != 0 && currentUser == null) {
@@ -83,8 +84,8 @@ public class App {
                 viewPendingRequests();
             } else if (menuSelection == 4) {
                 sendBucks();
-            } else if (menuSelection == 5) {
-                requestBucks();
+            /*} else if (menuSelection == 5) {
+                requestBucks();*/
             } else if (menuSelection == 0) {
                 continue;
             } else {
@@ -94,7 +95,7 @@ public class App {
         }
     }
 
-	private void viewCurrentBalance() {
+    private void viewCurrentBalance() {
         BigDecimal balance = accountService.getBalance(currentUser);
         System.out.println("\n****************************");
         System.out.println("Current balance is: $" + balance);
@@ -102,14 +103,14 @@ public class App {
         //testing commit
     }
 
-	private void viewTransferHistory() {
+    private void viewTransferHistory() {
         User[] users = transferService.listUsers(currentUser);
         Transfer[] transferHistory = transferService.transferHistory(currentUser.getUser().getId(), currentUser);
         System.out.println(transferHistory);
-	}
+    }
 
-	private void viewPendingRequests() {
-	}
+    private void viewPendingRequests() {
+    }
 
     private void sendBucks() {
         transferService = new TransferService();
@@ -120,37 +121,36 @@ public class App {
                     "Users\n" +
                     "ID            Name\n" +
                     "----------------------------------------------");
-            for (User user: users) {
-                System.out.println(accountService.getAccountId(user.getId(), currentUser) + "          " + accountService.getUsername(user.getId(), currentUser));//placeholder
+            for (User user : users) {
+                System.out.println(accountService.getAccountId(user.getId(), currentUser) + "          " + accountService.getUsername(user.getId(), currentUser));
             }
             System.out.println("----------------------------------------------");
         }
 
         console = new ConsoleService();
 
-        Integer userToId = console.promptForInt("Enter the user ID who you would like to transfer to \n");
-        if (userToId.equals(currentUser.getUser().getId())) {
-            userToId = console.promptForInt("Cmon now, no infinite money glitch");
-        }
-
-        BigDecimal amount = console.promptForBigDecimal("Enter amount you would like to transfer \n");
-
-        if (accountService.getBalance(currentUser).compareTo(amount) < 0) {
-            amount = console.promptForBigDecimal("Amount entered exceeds your balanced, please enter a valid amount ");
-        }
-
+        Integer userTo = console.promptForInt("Enter the user ID who you would like to transfer to \n");
         Integer accountIdFrom = accountService.getAccountId(currentUser.getUser().getId(), currentUser);
-        Integer accountIdTo = userToId;
+        if (accountIdFrom.equals(userTo)) {
+            userTo = console.promptForInt("Cmon now, no infinite money glitch");
+        } else {
+            int amount = console.promptForInt("Enter amount you would like to transfer \n");
+            if (accountService.getBalance(currentUser).intValue() < amount) {
+                amount = console.promptForInt("Amount entered exceeds your balance, please enter a valid amount ");
+            } else {
+                Integer accountIdTo = userTo;
 
-        transfer.setTransferTypeId(2);
-        transfer.setTransferStatusId(2);
-        transfer.setAccountFrom(accountIdFrom);
-        transfer.setAccountTo(accountIdTo);
-        transfer.setAmount(amount);
+                transfer.setTransferTypeId(2);
+                transfer.setTransferStatusId(2);
+                transfer.setAccountFrom(accountIdFrom);
+                transfer.setAccountTo(accountIdTo);
+                transfer.setAmount(BigDecimal.valueOf(amount));
 
-        transferService.addTransfer(transfer, accountIdFrom, accountIdTo, currentUser);
-        BigDecimal balance = accountService.getBalance(currentUser);
-        System.out.println("\nYour transfer has been completed, your new balance is: $" + balance);
+                transferService.addTransfer(transfer, accountIdFrom, accountIdTo, currentUser);
+                BigDecimal balance = accountService.getBalance(currentUser);
+                System.out.println("\nYour transfer has been completed, your new balance is: $" + balance);
+            }
+        }
     }
 
 	private void requestBucks() {
@@ -159,3 +159,4 @@ public class App {
 	}
 
 }
+
