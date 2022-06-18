@@ -134,9 +134,10 @@ public class App {
             userTo = console.promptForInt("Cmon now, no infinite money glitch");
         } else {
             int amount = console.promptForInt("Enter amount you would like to transfer \n");
-            if (accountService.getBalance(currentUser).intValue() < amount) {
+            while (accountService.getBalance(currentUser).intValue() < amount) {
                 amount = console.promptForInt("Amount entered exceeds your balance, please enter a valid amount ");
-            } else {
+                continue;
+            }
                 Integer accountIdTo = userTo;
 
                 transfer.setTransferTypeId(2);
@@ -148,7 +149,7 @@ public class App {
                 transferService.addTransfer(transfer, accountIdFrom, accountIdTo, currentUser);
                 BigDecimal balance = accountService.getBalance(currentUser);
                 System.out.println("\nYour transfer has been completed, your new balance is: $" + balance);
-            }
+
         }
     }
 
