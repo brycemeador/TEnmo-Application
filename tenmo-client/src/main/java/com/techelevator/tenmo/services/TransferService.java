@@ -5,7 +5,6 @@ import com.techelevator.tenmo.model.Transfer;
 import com.techelevator.tenmo.model.User;
 import org.springframework.http.*;
 import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
@@ -25,13 +24,6 @@ public class TransferService {
         this.authenticatedUser = authenticatedUser;
     }
 
-    public AuthenticatedUser user(){
-        AuthenticatedUser user = new AuthenticatedUser();
-        setToken(user.getToken());
-        setAuthenticatedUser(user);
-        return user;
-    }
-
     public Transfer[] transferHistory(int accountId, AuthenticatedUser user){
         Transfer[] transfers = null;
         setToken(user.getToken());
@@ -40,48 +32,46 @@ public class TransferService {
             transfers = restTemplate.exchange(API_BASE_URL + "/transfer/history/" + accountId, HttpMethod.GET,
                     makeAuthEntity(), Transfer[].class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
+            System.out.println(e.getMessage());
         }
         return transfers;
     }
 
-    public Transfer transfer(int accountId, AuthenticatedUser user){
-        Transfer transfer = null;
-        setToken(user.getToken());
-        setAuthenticatedUser(user);
+    public Boolean addTransfer(Transfer transfer, int accountFromId, int accountToId, AuthenticatedUser authenticatedUser) throws RestClientResponseException, ResourceAccessException {
+        Boolean transferResponse = false;
+        setToken(authenticatedUser.getToken());
+        setAuthenticatedUser(authenticatedUser);
         try {
-            transfer = restTemplate.exchange(API_BASE_URL + "/transfer/" + accountId + "/" + accountId,
-                    HttpMethod.POST, makeAuthEntity(), Transfer.class).getBody();
+            transferResponse = restTemplate.exchange(API_BASE_URL + "/transfer/" +
+                            accountFromId + "/" + accountToId,
+                    HttpMethod.POST,
+                    makeTransferEntity(transfer),
+                    Boolean.class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
+            System.out.println(e.getMessage());
         }
-        return transfer;
+        return transferResponse;
     }
 
-    public Transfer[] transferList() {
-        Transfer[] output = null;
+    public User[] listUsers(AuthenticatedUser authenticatedUser){
+        setToken(authenticatedUser.getToken());
+        setAuthenticatedUser(authenticatedUser);
+        User [] users = null;
         try {
-            output = restTemplate.exchange(API_BASE_URL + "/transfer/" + authenticatedUser, HttpMethod.GET,
-                    makeAuthEntity(), Transfer[].class).getBody();
-            System.out.println("*****transfers*****" +
-                    "ID          From/To        Amount");
-            String fromOrTo = "";
-            String name = "";
-            for (Transfer t : output) {
-                if (authenticatedUser.getUser().getId().equals(t.getAccountFrom()) ) {
-                    fromOrTo = "From: ";
-                    name = user.getUsername();
-                } else {
-                    fromOrTo = "To: ";
-                    name = user.getUsername();
-                }
-            }
-            System.out.println();
-        } catch (Exception e) {
-            System.out.println("Error");
+            users = restTemplate.exchange(API_BASE_URL + "/user",
+                    HttpMethod.GET, makeAuthEntity(), User[].class).getBody();
+        } catch (RestClientResponseException | ResourceAccessException e){
+            System.out.println(e.getMessage());
         }
-        return output;
+        return users;
     }
 
-
+    private HttpEntity<Transfer> makeTransferEntity(Transfer transfer) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setBearerAuth(token);
+        return new HttpEntity<>(transfer, headers);
+    }
 
     private HttpEntity<Void> makeAuthEntity() {
         HttpHeaders headers = new HttpHeaders();

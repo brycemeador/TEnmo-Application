@@ -10,6 +10,7 @@ import com.techelevator.tenmo.services.ConsoleService;
 import com.techelevator.tenmo.services.TransferService;
 
 import java.math.BigDecimal;
+import java.util.Scanner;
 
 public class App {
 
@@ -102,15 +103,54 @@ public class App {
     }
 
 	private void viewTransferHistory() {
+        User[] users = transferService.listUsers(currentUser);
+        Transfer[] transferHistory = transferService.transferHistory(currentUser.getUser().getId(), currentUser);
+        System.out.println(transferHistory);
 	}
 
 	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
-		
 	}
 
-	private void sendBucks() {
+    private void sendBucks() {
+        transferService = new TransferService();
+        Transfer transfer = new Transfer();
+        User[] users = transferService.listUsers(currentUser);
+        if (users != null) {
+            System.out.println("----------------------------------------------\n" +
+                    "Users\n" +
+                    "ID            Name\n" +
+                    "----------------------------------------------");
+            for (User user: users) {
+                System.out.println(accountService.getAccountId(user.getId(), currentUser) + "          " + accountService.getUsername(user.getId(), currentUser));//placeholder
+            }
+            System.out.println("----------------------------------------------");
+        }
 
+        console = new ConsoleService();
+
+        Integer userToId = console.promptForInt("Enter the user ID who you would like to transfer to \n");
+        if (userToId.equals(currentUser.getUser().getId())) {
+            userToId = console.promptForInt("Cmon now, no infinite money glitch");
+        }
+
+        BigDecimal amount = console.promptForBigDecimal("Enter amount you would like to transfer \n");
+
+        if (accountService.getBalance(currentUser).compareTo(amount) < 0) {
+            amount = console.promptForBigDecimal("Amount entered exceeds your balanced, please enter a valid amount ");
+        }
+
+        Integer accountIdFrom = accountService.getAccountId(currentUser.getUser().getId(), currentUser);
+        Integer accountIdTo = userToId;
+
+        transfer.setTransferTypeId(2);
+        transfer.setTransferStatusId(2);
+        transfer.setAccountFrom(accountIdFrom);
+        transfer.setAccountTo(accountIdTo);
+        transfer.setAmount(amount);
+
+        transferService.addTransfer(transfer, accountIdFrom, accountIdTo, currentUser);
+        BigDecimal balance = accountService.getBalance(currentUser);
+        System.out.println("\nYour transfer has been completed, your new balance is: $" + balance);
     }
 
 	private void requestBucks() {
