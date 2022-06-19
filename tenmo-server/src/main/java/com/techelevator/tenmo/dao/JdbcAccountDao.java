@@ -52,7 +52,7 @@ public class JdbcAccountDao implements AccountDao {
         return account;
     }
 
-    @Override
+    /*@Override
     public BigDecimal addToBalance(BigDecimal amountToAdd, int id) {
         Account account = findAccountById(id);
         BigDecimal newBalance = account.getBalance().add(amountToAdd);
@@ -63,8 +63,7 @@ public class JdbcAccountDao implements AccountDao {
             System.out.println("Error accessing data");
         }
         return account.getBalance();
-    }
-
+    }*/
 
     @Override
     public BigDecimal getBalance(int id) {

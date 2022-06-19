@@ -10,5 +10,5 @@ public interface TransferDao {
 
     boolean transfer (Transfer transfer, int accountFromId, int accountToId) throws Exception;
 
-
+    Transfer transferDetails(int transferId);
 }

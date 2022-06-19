@@ -103,9 +103,7 @@ public class App {
     }
 
     private void viewTransferHistory() {
-        User[] users = transferService.listUsers(currentUser);
-        Transfer[] transferHistory = transferService.transferHistory(currentUser.getUser().getId(), currentUser);
-        System.out.println(transferHistory);
+
     }
 
     private void viewPendingRequests() {
@@ -134,9 +132,11 @@ public class App {
             userTo = console.promptForInt("Cmon now, no infinite money glitch\n");
             continue;
         }
+
         //while statement to make sure that you can't transfer to a random number
         //while(userTo){
         //}
+
         int amount = console.promptForInt("Enter amount you would like to transfer \n");
         while (accountService.getBalance(currentUser).intValue() < amount) {
             amount = console.promptForInt("Amount entered exceeds your balance, please enter a valid amount \n");
@@ -153,13 +153,10 @@ public class App {
         transferService.addTransfer(transfer, accountIdFrom, accountIdTo, currentUser);
         BigDecimal balance = accountService.getBalance(currentUser);
         System.out.println("\nYour transfer has been completed, your new balance is: $" + balance);
-
-
     }
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
-		
 	}
 
 }
