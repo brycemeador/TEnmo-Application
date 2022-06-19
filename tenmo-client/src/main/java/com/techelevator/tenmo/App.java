@@ -103,7 +103,37 @@ public class App {
     }
 
     private void viewTransferHistory() {
-
+        transferService = new TransferService();
+        Transfer[] transferHistory = transferService.transferHistory(accountService.getAccountId(currentUser.getUser().getId(), currentUser), currentUser);
+        User[] users = transferService.listUsers(currentUser);
+        String username = null;
+        if (transferHistory.length == 0){
+            System.out.println("\n 🚫 No transfers to display 🚫");
+        } else {
+            System.out.println("-----------------------------------------\n" +
+                    "Transfer\n" +
+                    "ID               From/To           Amount\n" +
+                    "-----------------------------------------");
+            for (Transfer transfer : transferHistory) {
+                if (users != null) {
+                    for (User user : users) {
+                        if (accountService.getAccountId(user.getId(), currentUser).equals(transfer.getAccountTo()) && !currentUser.getUser().getId().equals(user.getId())) {
+                            username = user.getUsername();
+                        }
+                        if (accountService.getAccountId(user.getId(), currentUser).equals(transfer.getAccountFrom()) && !currentUser.getUser().getId().equals(user.getId())) {
+                            username = user.getUsername();
+                        }
+                    }
+                    System.out.print(transfer.getTransferID() + "       ");
+                    if (accountService.getAccountId(currentUser.getUser().getId(), currentUser).equals(transfer.getAccountFrom())) {
+                        System.out.print("From: " + username + "         $ " + transfer.getAmount() + "\n");
+                    } else {
+                        System.out.print("To: " + username + "         $ " + transfer.getAmount() + "\n");
+                    }
+                    System.out.println("-----------------------------------------");
+                }
+            }
+        }
     }
 
     private void viewPendingRequests() {
@@ -137,9 +167,9 @@ public class App {
         //while(userTo){
         //}
 
-        int amount = console.promptForInt("Enter amount you would like to transfer \n");
-        while (accountService.getBalance(currentUser).intValue() < amount) {
-            amount = console.promptForInt("Amount entered exceeds your balance, please enter a valid amount \n");
+        BigDecimal amount = console.promptForBigDecimal("Enter amount you would like to transfer \n");
+        while (accountService.getBalance(currentUser).intValue() < amount.intValue()) {
+            amount = console.promptForBigDecimal("Amount entered exceeds your balance, please enter a valid amount \n");
             continue;
         }
         Integer accountIdTo = userTo;
@@ -148,7 +178,7 @@ public class App {
         transfer.setTransferStatusId(2);
         transfer.setAccountFrom(accountIdFrom);
         transfer.setAccountTo(accountIdTo);
-        transfer.setAmount(BigDecimal.valueOf(amount));
+        transfer.setAmount(amount);
 
         transferService.addTransfer(transfer, accountIdFrom, accountIdTo, currentUser);
         BigDecimal balance = accountService.getBalance(currentUser);
