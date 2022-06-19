@@ -28,4 +28,9 @@ public class TransferController {
     public boolean transfer(@RequestBody Transfer transfer, @PathVariable int accountFromId, @PathVariable int accountToId) throws Exception {
         return dao.transfer(transfer, accountFromId, accountToId);
     }
+
+    @GetMapping("/transferdetails/{transferId}")
+    public Transfer transferDetails(@PathVariable int transferId){
+        return dao.transferDetails(transferId);
+    }
 }

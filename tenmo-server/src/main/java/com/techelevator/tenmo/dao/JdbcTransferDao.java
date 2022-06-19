@@ -31,6 +31,17 @@ public class JdbcTransferDao implements TransferDao{
     }
 
     @Override
+    public Transfer transferDetails(int transferId) {
+        Transfer transferDetails = null;
+        String sql = "select * from transfer where transfer_id = ?";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferId);
+        if (results.next()){
+            transferDetails = mapRowToTransfer(results);
+        }
+        return transferDetails;
+    }
+
+    @Override
     public List<Transfer> transferHistory(Long account_id) {
         List<Transfer> transferHistory = new ArrayList<>();
         String sql = "select * from transfer where account_from = ? or account_to = ?";
@@ -41,6 +52,8 @@ public class JdbcTransferDao implements TransferDao{
         }
         return transferHistory;
     }
+
+
 
     private Transfer mapRowToTransfer(SqlRowSet results) {
         Transfer transfer = new Transfer();
