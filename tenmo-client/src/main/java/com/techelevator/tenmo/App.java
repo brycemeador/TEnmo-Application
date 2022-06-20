@@ -85,12 +85,12 @@ public class App {
                 viewCurrentBalance();
             } else if (menuSelection == 2) {
                 viewTransferHistory();
-            } /*else if (menuSelection == 3) {
+            } else if (menuSelection == 3) {
                 viewPendingRequests();
-            }*/ else if (menuSelection == 3) {
+            } else if (menuSelection == 4) {
                 sendBucks();
-            /*} else if (menuSelection == 5) {
-                requestBucks();*/
+            } else if (menuSelection == 5) {
+                requestBucks();
             } else if (menuSelection == 0) {
                 continue;
             } else {
@@ -117,7 +117,7 @@ public class App {
             System.out.println("\n 🚫 No transfers to display 🚫");
         } else {
             System.out.println("-------------------------------------\n" +
-                    "           Transfer\n" +
+                    "Transfer History\n" +
                     "ID         From/To         Amount\n" +
                     "-------------------------------------");
 
@@ -146,29 +146,33 @@ public class App {
                 if (transferSelection.equals(transfer.getTransferID())){
                     Transfer selectedTransfer = transferService.transferDetails(transferSelection);
                     System.out.println("----------------------------");
-                    System.out.println("      Transfer Details      ");
+                    System.out.println("Transfer Details      ");
                     System.out.println("----------------------------");
-                    System.out.println("Transfer Id: " + selectedTransfer.getTransferID());
-                    if (selectedTransfer.getAccountFrom().equals(currentUser)) {
-                        System.out.println("From: " + currentUser.getUser().getUsername());
+                    System.out.println(leftpad("Transfer ID:", 18) + selectedTransfer.getTransferID());
+
+                    int toUser = selectedTransfer.getAccountTo();
+                    int toUser1 = Integer.parseInt(accountService.getUserId(toUser, currentUser));
+                    int fromUser = selectedTransfer.getAccountFrom();
+                    int fromUser1 = Integer.parseInt(accountService.getUserId(fromUser, currentUser));
+
+                    if (selectedTransfer.getAccountFrom().equals(accountService.getAccountId(currentUser.getUser().getId(), currentUser))) {
+                        System.out.println(leftpad("From:", 18) + currentUser.getUser().getUsername());
+                        System.out.println(leftpad("To:", 18) + accountService.getUsername(toUser1, currentUser));
                     }
                     else{
-                        System.out.println("To: " + currentUser.getUser().getUsername());
+                        System.out.println(leftpad("From:", 18) + accountService.getUsername(fromUser1, currentUser));
+                        System.out.println(leftpad("To:", 18) + currentUser.getUser().getUsername());
                     }
-                    if (!selectedTransfer.getAccountTo().equals(currentUser)) {
-                        System.out.println("From: " + selectedTransfer.getAccountFrom());
-                    }
-                    else{
-                        System.out.println("To: " + currentUser.getUser().getUsername());
-                    }
+
                     if (selectedTransfer.getTransferTypeId().equals(2)){
-                    System.out.println("Type: Send");
+                    System.out.println(leftpad("Type:", 18) + "Send");
                     }
                     else{
-                        System.out.println("Type: Received");
+                        System.out.println(leftpad("Type:", 18) + "Received");
                     }
-                    System.out.println("Status: Approved");
-                    System.out.println("Amount: $" + transfer.getAmount());
+
+                    System.out.println(leftpad("Status:", 18) + "Approved");
+                    System.out.println(leftpad("Amount:", 18) + "$" + transfer.getAmount());
                 }
             }
         }
@@ -182,14 +186,14 @@ public class App {
         Transfer transfer = new Transfer();
         User[] users = transferService.listUsers(currentUser);
         if (users != null) {
-            System.out.println("----------------------------------------------\n" +
+            System.out.println("-------------------------------------\n" +
                     "Users\n" +
                     "ID            Name\n" +
-                    "----------------------------------------------");
+                    "-------------------------------------");
             for (User user : users) {
                 System.out.println(accountService.getAccountId(user.getId(), currentUser) + "          " + accountService.getUsername(user.getId(), currentUser));
             }
-            System.out.println("----------------------------------------------");
+            System.out.println("-------------------------------------");
         }
 
         console = new ConsoleService();
