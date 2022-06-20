@@ -53,6 +53,17 @@ public class TransferService {
         return transferResponse;
     }
 
+    public Transfer transferDetails(int transferId) throws RestClientResponseException, ResourceAccessException {
+        Transfer transfer = null;
+        try {
+            transfer = restTemplate.exchange(API_BASE_URL + "/transferdetails/" + transferId, HttpMethod.GET,
+                    makeAuthEntity(), Transfer.class).getBody();
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            System.out.println(e.getMessage());
+        }
+        return transfer;
+    }
+
     public User[] listUsers(AuthenticatedUser authenticatedUser){
         setToken(authenticatedUser.getToken());
         setAuthenticatedUser(authenticatedUser);
