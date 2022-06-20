@@ -21,7 +21,7 @@ public class JdbcTransferDao implements TransferDao{
 
     @Override
     public boolean transfer(Transfer transfer, int accountFromId, int accountToId) throws Exception {
-        String sql = "insert into transfer (transfer_type_id, transfer_status_id, account_to, account_from, amount)" +
+        String sql = "insert into transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount)" +
                 "values (?, ?, ?, ?, ?);" +
                 "update account set balance = balance - ? where account_id = ?;" +
                 "update account set balance = balance + ? where account_id = ?;";
