@@ -49,6 +49,20 @@ public class AccountService {
         return username;
     }
 
+    public String getUserId(int accountId, AuthenticatedUser user) {
+        setToken(user.getToken());
+        setAuthenticatedUser(user);
+        String username = null;
+        try {
+            username = restTemplate.exchange(API_BASE_URL + "accountId/" + accountId,
+                    HttpMethod.GET,
+                    makeAuthEntity(), String.class).getBody();
+        } catch (RestClientResponseException | ResourceAccessException e) {
+            System.out.println(e.getMessage());
+        }
+        return username;
+    }
+
     public BigDecimal getBalance(AuthenticatedUser user) throws RestClientResponseException, ResourceAccessException {
         BigDecimal balance = null;
         setToken(user.getToken());
