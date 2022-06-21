@@ -1,104 +1,68 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Transfer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class JdbcTransferDao implements TransferDao {
+public class JdbcTransferDao implements TransferDao{
 
-    @Autowired
     private JdbcTemplate jdbcTemplate;
-    @Autowired
     private AccountDao accountDao;
 
-    @Override
-    public List<Transfer> getAllTransfers(int userId) {
-        //TODO get all transfers method
-        return null;
+    public JdbcTransferDao(JdbcTemplate jdbcTemplate){
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public Transfer getTransferById(int transferId) {
-        //TODO get transfers by ID method
-        return null;
+    public boolean transfer(Transfer transfer, int accountFromId, int accountToId) throws Exception {
+        String sql = "insert into transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount)" +
+                "values (?, ?, ?, ?, ?);" +
+                "update account set balance = balance - ? where account_id = ?;" +
+                "update account set balance = balance + ? where account_id = ?;";
+            return jdbcTemplate.update(sql, transfer.getTransferTypeId(), transfer.getTransferStatusId(),
+                    transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount(), transfer.getAmount(),
+                    accountFromId, transfer.getAmount(), accountToId) == 3;
     }
 
     @Override
-    public String sendTransfer(int userFrom, int userTo, BigDecimal amount) {
-        return null;
-    }
-
-    @Override
-    public String requestTransfer(int userFrom, int userTo, BigDecimal amount) {
-        if (userFrom == userTo) {
-            System.out.println("You can't send money to yourself");
+    public Transfer transferDetails(int transferId) {
+        Transfer transferDetails = null;
+        String sql = "select * from transfer where transfer_id = ?";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, transferId);
+        if (results.next()){
+            transferDetails = mapRowToTransfer(results);
         }
-        if (amount.compareTo(new BigDecimal(0)) == 1) {
-            String sql = "insert into transfer (transfer_type_id, transfer_status_id, account_from, account_to, amount) " +
-                    "values ?, ?, ?, ?, ?";
-            jdbcTemplate.update(sql, userFrom, userTo, amount);
-            return "Your request was sent!";
-        } else {
-            return "Error sending transfer";
-        }
+        return transferDetails;
     }
 
     @Override
-    public List<Transfer> getPendingTransfers(int userId) {
-        return null;
+    public List<Transfer> transferHistory(Long account_id) {
+        List<Transfer> transferHistory = new ArrayList<>();
+        String sql = "select * from transfer where account_from = ? or account_to = ?";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, account_id, account_id);
+        while (results.next()){
+            Transfer history = mapRowToTransfer(results);
+            transferHistory.add(history);
+        }
+        return transferHistory;
     }
 
-    @Override
-    public List<Transfer> getPendingRequests(int userId) {
-        //TODO return pending transfers
-        return null;
-    }
 
-    @Override
-    public String updateTransferRequest(Transfer transfer, int statusId) {
-        if (statusId == 3) {
-            String sql = "UPDATE transfers SET transfer_status_id = ? WHERE transfer_id = ?;";
-            jdbcTemplate.update(sql, statusId, transfer.getTransferId());
-            return "Update sucessful";
-        }
-        if (!(accountDao.getBalance(transfer.getAccountFrom()).compareTo(transfer.getAmount()) == -1)) {
-            String sql = "UPDATE transfers SET transfer_status_id = ? WHERE transfer_id = ?;";
-            jdbcTemplate.update(sql, statusId, transfer.getTransferId());
-            accountDao.addToBalance(transfer.getAmount(), transfer.getAccountTo());
-            accountDao.subtractFromBalance(transfer.getAmount(), transfer.getAccountFrom());
-            return "Update successful";
-        } else {
-            return "Not enough funds for transfer";
-        }
-    }
 
     private Transfer mapRowToTransfer(SqlRowSet results) {
         Transfer transfer = new Transfer();
-        transfer.setTransferId(results.getInt("transfer_id"));
-        transfer.setTransferTypeId(results.getInt("transfer_type_id"));
-        transfer.setTransferStatusId(results.getInt("transfer_status_id"));
-        transfer.setAccountFrom(results.getInt("account_From"));
-        transfer.setAccountTo(results.getInt("account_to"));
+        transfer.setTransferID(results.getLong("transfer_id"));
+        transfer.setTransferTypeId(results.getLong("transfer_type_id"));
+        transfer.setTransferStatusId(results.getLong("transfer_status_id"));
+        transfer.setAccountFrom(results.getLong("account_from"));
+        transfer.setAccountTo(results.getLong("account_to"));
         transfer.setAmount(results.getBigDecimal("amount"));
-        try {
-            transfer.setUserFrom(results.getString("userFrom"));
-            transfer.setUserTo(results.getString("userTo"));
-        } catch (Exception e) {
-            System.out.println("Error fetching data");
-        }
-        try {
-            transfer.setTransferType(results.getString("transfer_type_desc"));
-            transfer.setTransferStatus(results.getString("transfer_status_desc"));
-        } catch (Exception e) {
-            System.out.println("Error fetching data");
-        }
         return transfer;
     }
-
 }

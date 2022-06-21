@@ -1,103 +1,82 @@
 package com.techelevator.tenmo.dao;
 
 import com.techelevator.tenmo.model.Account;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.techelevator.tenmo.model.User;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
-import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import javax.xml.crypto.Data;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
-@Service
+@Component
 public class JdbcAccountDao implements AccountDao {
 
-    @Autowired
     private JdbcTemplate jdbcTemplate;
-
-    public JdbcAccountDao() {}
 
     public JdbcAccountDao(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
-    public Account findUserById(int userId) {
-        String sql = "select * from accounts where user_id = ?";
-        Account account = null;
-        try {
-            SqlRowSet result = jdbcTemplate.queryForRowSet(sql, userId);
-            account = mapRowToAccount(result);
-        } catch (DataAccessException e) {
-            System.out.println("Error");
-        }
-        return account;
-    }
-
-    @Override
-    public Account findAccountById(int userId) {
+    public Account getAccount(int id) {
         String sql = "select * from account where user_id = ?";
-        Account account = null;
-        try {
-            SqlRowSet result = jdbcTemplate.queryForRowSet(sql, userId);
-            account = mapRowToAccount(result);
-        } catch (DataAccessException e) {
-            System.out.println("Error");
-        }
+        Account account = jdbcTemplate.queryForObject(sql, Account.class, id);
         return account;
     }
 
     @Override
-    public BigDecimal getBalance(int userId) {
-        String sql = "select balance from account where user_id = ?";
-        SqlRowSet results = null;
-        BigDecimal balance = null;
-        try {
-            results = jdbcTemplate.queryForRowSet(sql, userId);
-            if (results.next()) {
-                balance = results.getBigDecimal("balance");
-            }
-        } catch (DataAccessException e) {
-            System.out.println("error");
-        }
-        return balance;
+    public int getAccountId(int id) {
+        String sql = "select account_id from account where user_id = ?";
+        int accountId = jdbcTemplate.queryForObject(sql, int.class, id);
+        return accountId;
     }
 
     @Override
+    public int getUserId(int id) {
+        String sql = "select user_id from account where account_id = ?";
+        int userId = jdbcTemplate.queryForObject(sql, int.class, id);
+        return userId;
+    }
+
+    @Override
+    public Account findAccountById(int id) {
+        Account account = null;
+        String sql = "select * from account where user_id = ?";
+        SqlRowSet results = jdbcTemplate.queryForRowSet(sql, id);
+        if (results.next()) {
+            account = mapRowToAccount(results);
+        }
+        return account;
+    }
+
+    /*@Override
     public BigDecimal addToBalance(BigDecimal amountToAdd, int id) {
         Account account = findAccountById(id);
         BigDecimal newBalance = account.getBalance().add(amountToAdd);
-        System.out.println("Your new balance is $" + newBalance);
-        String sql = "update account set balance = ? where user_id = ?";
+        String sqlString = "update accounts set balance = ? where user_id = ?";
         try {
-            jdbcTemplate.update(sql, newBalance, id);
+            jdbcTemplate.update(sqlString, newBalance, id);
         } catch (DataAccessException e) {
-            System.out.println("error");
+            System.out.println("Error accessing data");
         }
         return account.getBalance();
-    }
+    }*/
 
     @Override
-    public BigDecimal subtractFromBalance(BigDecimal amountToSubtract, int id) {
-        Account account= findAccountById(id);
-        BigDecimal newBalance = account.getBalance().subtract(amountToSubtract);
-        String sql = "update account set balance = ? where user_id = ?";
-        try {
-            jdbcTemplate.update(sql, newBalance, id);
-        } catch (DataAccessException e) {
-            System.out.println("error");
-        }
-        return account.getBalance();
+    public BigDecimal getBalance(int id) {
+        String sql = "select balance from account where user_id = ?";
+        BigDecimal balance = jdbcTemplate.queryForObject(sql, BigDecimal.class, id);
+        return balance;
     }
 
-
-    private Account mapRowToAccount(SqlRowSet result) {
+    private Account mapRowToAccount(SqlRowSet results) {
         Account account = new Account();
-        account.setBalance(result.getBigDecimal("balance"));
-        account.setAccountId(result.getInt("account_id"));
-        account.setUserId(result.getInt("user_id"));
+        account.setAccountId(results.getLong("account_id"));
+        account.setUserId(results.getLong("user_id"));
+        account.setBalance(results.getBigDecimal("balance"));
         return account;
     }
 }

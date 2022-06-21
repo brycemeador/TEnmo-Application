@@ -1,8 +1,9 @@
 package com.techelevator.tenmo.controller;
 
+import com.techelevator.tenmo.dao.JdbcTransferDao;
+import com.techelevator.tenmo.dao.JdbcUserDao;
 import com.techelevator.tenmo.dao.TransferDao;
 import com.techelevator.tenmo.model.Transfer;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,30 +13,24 @@ import java.util.List;
 @PreAuthorize("isAuthenticated()")
 public class TransferController {
 
-    @Autowired
-    private TransferDao transferDao;
+    private TransferDao dao;
 
-    @GetMapping("account/transfer/{id}")
-    public List<Transfer> getAllTransfers(@PathVariable int id) {
-        List<Transfer> output = transferDao.getAllTransfers(id);
-        return output;
+    public TransferController(JdbcTransferDao dao) {
+        this.dao = dao;
     }
 
-    //TODO Get transfer by ID
-
-    @PostMapping("transfer")
-    public String sendTransferRequest(@RequestBody Transfer transfer) {
-        String results = transferDao.sendTransfer(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
-        return results;
+    @GetMapping("/transfer/history/{id}")
+    public List<Transfer> transferHistory(@PathVariable Long id) {
+        return dao.transferHistory(id);
     }
 
-    @PostMapping("request")
-    public String requestTransferRequest(@RequestBody Transfer transfer) {
-        String results = transferDao.requestTransfer(transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
-        return results;
+    @PostMapping("/transfer/{accountFromId}/{accountToId}")
+    public boolean transfer(@RequestBody Transfer transfer, @PathVariable int accountFromId, @PathVariable int accountToId) throws Exception {
+        return dao.transfer(transfer, accountFromId, accountToId);
     }
 
-    //TODO Get all transfer requests
-
-    //TODO update requests
+    @GetMapping("/transferdetails/{transferId}")
+    public Transfer transferDetails(@PathVariable int transferId){
+        return dao.transferDetails(transferId);
+    }
 }

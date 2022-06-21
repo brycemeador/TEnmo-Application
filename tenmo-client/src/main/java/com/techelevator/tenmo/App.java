@@ -1,11 +1,17 @@
 package com.techelevator.tenmo;
 
 import com.techelevator.tenmo.model.AuthenticatedUser;
+import com.techelevator.tenmo.model.Transfer;
+import com.techelevator.tenmo.model.User;
 import com.techelevator.tenmo.model.UserCredentials;
 import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.ConsoleService;
 import com.techelevator.tenmo.services.TransferService;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Scanner;
 
 public class App {
 
@@ -15,6 +21,9 @@ public class App {
     private final AuthenticationService authenticationService = new AuthenticationService(API_BASE_URL);
 
     private AuthenticatedUser currentUser;
+    private ConsoleService console;
+    private AccountService accountService = new AccountService();
+    private TransferService transferService = new TransferService();
 
     public static void main(String[] args) {
         App app = new App();
@@ -28,6 +37,7 @@ public class App {
             mainMenu();
         }
     }
+
     private void loginMenu() {
         int menuSelection = -1;
         while (menuSelection != 0 && currentUser == null) {
@@ -62,6 +72,10 @@ public class App {
         }
     }
 
+    private String leftpad(String text, int length) {        //lets me format a string to be a specific length
+        return String.format("%-" + length + "." + length + "s", text);
+    }
+
     private void mainMenu() {
         int menuSelection = -1;
         while (menuSelection != 0) {
@@ -86,34 +100,139 @@ public class App {
         }
     }
 
-	private void viewCurrentBalance() {
-        AccountService accountService = new AccountService(API_BASE_URL, currentUser);
-        try {
-            accountService.getBalance();
-        } catch (NullPointerException e) {
-            System.out.println("No balance!");
+    private void viewCurrentBalance() {
+        BigDecimal balance = accountService.getBalance(currentUser);
+        System.out.println("\n****************************");
+        System.out.println("Current balance is: $" + balance);
+        System.out.println("****************************");
+    }
+
+    private void viewTransferHistory() {
+        transferService = new TransferService();
+        Transfer[] transferHistory = transferService.transferHistory(accountService.getAccountId(currentUser.getUser().getId(), currentUser), currentUser);
+        User[] users = transferService.listUsers(currentUser);
+        String username = null;
+        if (transferHistory.length == 0) {
+            System.out.println("\n 🚫 No transfers to display 🚫");
+        } else {
+            System.out.println("-------------------------------------\n" +
+                    "Transfer History\n" +
+                    "ID         From/To         Amount\n" +
+                    "-------------------------------------");
+
+            for (Transfer transfer : transferHistory) {
+                if (users != null) {
+                    for (User user : users) {
+                        if (accountService.getAccountId(user.getId(), currentUser).equals(transfer.getAccountTo()) && !currentUser.getUser().getId().equals(user.getId())) {
+                            username = user.getUsername();
+                        }
+                        if (accountService.getAccountId(user.getId(), currentUser).equals(transfer.getAccountFrom()) && !currentUser.getUser().getId().equals(user.getId())) {
+                            username = user.getUsername();
+                        }
+                    }
+                    System.out.print(transfer.getTransferID() + "       ");
+                    if (accountService.getAccountId(currentUser.getUser().getId(), currentUser).equals(transfer.getAccountFrom())) {
+                        System.out.print("To:   " + leftpad(username, 10) + "$" + transfer.getAmount() + "\n");
+                    } else {
+                        System.out.print("From: " + leftpad(username, 10) + "$" + transfer.getAmount() + "\n");
+                    }
+                }
+            }
+            System.out.println("-------------------------------------");
+            console = new ConsoleService();
+            Integer transferSelection = console.promptForInt("Please enter transfer ID to view details or press any number to return\n");
+            for (Transfer transfer : transferHistory) {
+                if (transferSelection.equals(transfer.getTransferID())){
+                    Transfer selectedTransfer = transferService.transferDetails(transferSelection);
+                    System.out.println("----------------------------");
+                    System.out.println("Transfer Details      ");
+                    System.out.println("----------------------------");
+                    System.out.println(leftpad("Transfer ID:", 18) + selectedTransfer.getTransferID());
+
+                    int toUser = selectedTransfer.getAccountTo();
+                    int toUser1 = Integer.parseInt(accountService.getUserId(toUser, currentUser));
+                    int fromUser = selectedTransfer.getAccountFrom();
+                    int fromUser1 = Integer.parseInt(accountService.getUserId(fromUser, currentUser));
+
+                    if (selectedTransfer.getAccountFrom().equals(accountService.getAccountId(currentUser.getUser().getId(), currentUser))) {
+                        System.out.println(leftpad("From:", 18) + currentUser.getUser().getUsername());
+                        System.out.println(leftpad("To:", 18) + accountService.getUsername(toUser1, currentUser));
+                    }
+                    else{
+                        System.out.println(leftpad("From:", 18) + accountService.getUsername(fromUser1, currentUser));
+                        System.out.println(leftpad("To:", 18) + currentUser.getUser().getUsername());
+                    }
+
+                    if (selectedTransfer.getTransferTypeId().equals(2)){
+                    System.out.println(leftpad("Type:", 18) + "Send");
+                    }
+                    else{
+                        System.out.println(leftpad("Type:", 18) + "Received");
+                    }
+
+                    System.out.println(leftpad("Status:", 18) + "Approved");
+                    System.out.println(leftpad("Amount:", 18) + "$" + transfer.getAmount());
+                }
+            }
         }
-	}
+    }
 
-	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
-		
-	}
+    private void viewPendingRequests() {
+    }
 
-	private void viewPendingRequests() {
-		// TODO Auto-generated method stub
-		
-	}
+    private void sendBucks() {
+        transferService = new TransferService();
+        Transfer transfer = new Transfer();
+        User[] users = transferService.listUsers(currentUser);
+        if (users != null) {
+            System.out.println("-------------------------------------\n" +
+                    "Users\n" +
+                    "ID            Name\n" +
+                    "-------------------------------------");
+            for (User user : users) {
+                System.out.println(accountService.getAccountId(user.getId(), currentUser) + "          " + accountService.getUsername(user.getId(), currentUser));
+            }
+            System.out.println("-------------------------------------");
+        }
 
-	private void sendBucks() {
-		// TODO Auto-generated method stub
-        TransferService transferService = new TransferService(API_BASE_URL, currentUser);
-        transferService.sendBucks();
-	}
+        console = new ConsoleService();
+
+        Integer userTo = console.promptForInt("Enter the user ID who you would like to transfer to \n");
+        Integer accountIdFrom = accountService.getAccountId(currentUser.getUser().getId(), currentUser);
+        while (accountIdFrom.equals(userTo)) {
+            userTo = console.promptForInt("Cmon now, no infinite money glitch\n");
+            continue;
+        }
+
+        //while statement to make sure that you can't transfer to a random number
+        //while(userTo){
+        //}
+
+        BigDecimal amount = console.promptForBigDecimal("Enter amount you would like to transfer \n");
+        while (accountService.getBalance(currentUser).intValue() < amount.intValue()) {
+            amount = console.promptForBigDecimal("Amount entered exceeds your balance, please enter a valid amount \n");
+            continue;
+        }
+        if (0.01 >= amount.intValue()) {
+            amount = console.promptForBigDecimal("Transfer must be greater than 0 \n");
+        }
+
+        Integer accountIdTo = userTo;
+
+        transfer.setTransferTypeId(2);
+        transfer.setTransferStatusId(2);
+        transfer.setAccountFrom(accountIdFrom);
+        transfer.setAccountTo(accountIdTo);
+        transfer.setAmount(amount);
+
+        transferService.addTransfer(transfer, accountIdFrom, accountIdTo, currentUser);
+        BigDecimal balance = accountService.getBalance(currentUser);
+        System.out.println("\nYour transfer has been completed, your new balance is: $" + balance);
+    }
 
 	private void requestBucks() {
 		// TODO Auto-generated method stub
-		
 	}
 
 }
+
