@@ -24,6 +24,7 @@ public class TransferService {
         this.authenticatedUser = authenticatedUser;
     }
 
+    //Grabs users past transfers from the server
     public Transfer[] transferHistory(int accountId, AuthenticatedUser user){
         Transfer[] transfers = null;
         setToken(user.getToken());
@@ -37,6 +38,7 @@ public class TransferService {
         return transfers;
     }
 
+    //Pushes transfer to the server
     public Boolean addTransfer(Transfer transfer, int accountFromId, int accountToId, AuthenticatedUser authenticatedUser) throws RestClientResponseException, ResourceAccessException {
         Boolean transferResponse = false;
         setToken(authenticatedUser.getToken());
@@ -53,6 +55,7 @@ public class TransferService {
         return transferResponse;
     }
 
+    //Grabs the detail of a specific transfer
     public Transfer transferDetails(int transferId) throws RestClientResponseException, ResourceAccessException {
         Transfer transfer = null;
         try {
@@ -64,6 +67,7 @@ public class TransferService {
         return transfer;
     }
 
+    //List all users
     public User[] listUsers(AuthenticatedUser authenticatedUser){
         setToken(authenticatedUser.getToken());
         setAuthenticatedUser(authenticatedUser);
