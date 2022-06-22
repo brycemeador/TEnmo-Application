@@ -23,7 +23,7 @@ public class ConsoleService {
 
     public void printGreeting() {
         System.out.println("*********************");
-        System.out.println("* Welcome to TEnmo! *");
+        System.out.println("💸Welcome to TEnmo!💸");
         System.out.println("*********************");
     }
 
@@ -35,10 +35,13 @@ public class ConsoleService {
         System.out.println();
     }
 
-    public void printMainMenu() {
+    public void printWelcome(){
         System.out.println("\n***************************");
         System.out.println("💸 Welcome back to TEnmo! 💸");
         System.out.println("***************************\n");
+    }
+
+    public void printMainMenu() {
         System.out.println("1: View your current balance 💰");
         System.out.println("2: View your past transfers 💵");
         System.out.println("3: View your pending requests 🚫");
@@ -49,7 +52,7 @@ public class ConsoleService {
     }
 
     public UserCredentials promptForCredentials() {
-        String username = promptForString("Username: ");
+        String username = promptForString("\nUsername: ");
         String password = promptForString("Password: ");
         return new UserCredentials(username, password);
     }
@@ -81,13 +84,30 @@ public class ConsoleService {
         }
     }
 
+    public void loginPause() {
+        System.out.println("\nPress Enter to return to the main menu...");
+        scanner.nextLine();
+    }
+
     public void pause() {
-        System.out.println("\nPress Enter to continue...");
+        System.out.println("\nPress Enter to return to the main menu...");
         scanner.nextLine();
     }
 
     public void printErrorMessage() {
-        System.out.println("An error occurred. Check the log for details.");
+        System.out.println("\nAn error occurred. Check the log for details.");
+    }
+
+    public void registrationError(){
+        System.out.println("\nThere was an error when registering the account, please try again");
+    }
+
+    public void loginError(){
+        System.out.println("\nUsername/Password is incorrect");
+    }
+
+    public void nextUpdate(){
+        System.out.println("\nComing soon in the next update!");
     }
 
 }

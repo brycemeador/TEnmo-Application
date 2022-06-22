@@ -21,6 +21,7 @@ public class AccountService {
         this.token = token;
     }
 
+    //Grabs account ID from server using the user ID
     public Integer getAccountId(int userId, AuthenticatedUser user) {
         setToken(user.getToken());
         setAuthenticatedUser(user);
@@ -30,11 +31,12 @@ public class AccountService {
                     HttpMethod.GET,
                     makeAuthEntity(), Integer.class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println(e.getMessage());System.out.println(e.getMessage());
+            BasicLogger.log(e.getMessage());
         }
         return accountId;
     }
 
+    //Grabs the username from the server using the user ID
     public String getUsername(int userId, AuthenticatedUser user) {
         setToken(user.getToken());
         setAuthenticatedUser(user);
@@ -44,11 +46,12 @@ public class AccountService {
                     HttpMethod.GET,
                     makeAuthEntity(), String.class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println(e.getMessage());
+            BasicLogger.log(e.getMessage());
         }
         return username;
     }
 
+    //Grabs the user ID from the server using the account ID
     public String getUserId(int accountId, AuthenticatedUser user) {
         setToken(user.getToken());
         setAuthenticatedUser(user);
@@ -58,11 +61,12 @@ public class AccountService {
                     HttpMethod.GET,
                     makeAuthEntity(), String.class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
-            System.out.println(e.getMessage());
+            BasicLogger.log(e.getMessage());
         }
         return username;
     }
 
+    //Grabs the user's balance from the server using the user ID
     public BigDecimal getBalance(AuthenticatedUser user) throws RestClientResponseException, ResourceAccessException {
         BigDecimal balance = null;
         setToken(user.getToken());
@@ -71,6 +75,7 @@ public class AccountService {
             balance = restTemplate.exchange(API_BASE_URL + "account/balance/" + user.getUser().getId(),
                     HttpMethod.GET, makeAuthEntity(), BigDecimal.class).getBody();
         } catch (RestClientResponseException | ResourceAccessException e) {
+            BasicLogger.log(e.getMessage());
         }
         return balance;
     }
