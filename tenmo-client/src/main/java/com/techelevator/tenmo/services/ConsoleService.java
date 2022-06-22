@@ -23,7 +23,7 @@ public class ConsoleService {
 
     public void printGreeting() {
         System.out.println("*********************");
-        System.out.println("* Welcome to TEnmo! *");
+        System.out.println("💸Welcome to TEnmo!💸");
         System.out.println("*********************");
     }
 

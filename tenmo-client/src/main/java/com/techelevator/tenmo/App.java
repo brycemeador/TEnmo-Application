@@ -111,7 +111,6 @@ public class App {
         System.out.println("\n****************************" +
                 "\nCurrent balance is: $" + balance +
                 "\n****************************");
-        return;
     }
 
     //Displays the user's transfer history, listing the transfer ID, who it was from/to, and the amount of the transfer.
@@ -155,11 +154,11 @@ public class App {
             console = new ConsoleService();
             Integer transferSelection = console.promptForInt("Please enter transfer ID to view details or press any number to return\n");
             for (Transfer transfer : transferHistory) {
-                if (transferSelection.equals(transfer.getTransferID())){
+                if (transferSelection.equals(transfer.getTransferID())) {
                     Transfer selectedTransfer = transferService.transferDetails(transferSelection);
                     System.out.println("----------------------------\n" +
-                    "Transfer Details\n" +
-                    "----------------------------");
+                            "Transfer Details\n" +
+                            "----------------------------");
                     System.out.println(leftpad("Transfer ID:", 18) + selectedTransfer.getTransferID());
 
                     int toUser = selectedTransfer.getAccountTo();
@@ -170,16 +169,14 @@ public class App {
                     if (selectedTransfer.getAccountFrom().equals(accountService.getAccountId(currentUser.getUser().getId(), currentUser))) {
                         System.out.println(leftpad("From:", 18) + currentUser.getUser().getUsername());
                         System.out.println(leftpad("To:", 18) + accountService.getUsername(toUser1, currentUser));
-                    }
-                    else{
+                    } else {
                         System.out.println(leftpad("From:", 18) + accountService.getUsername(fromUser1, currentUser));
                         System.out.println(leftpad("To:", 18) + currentUser.getUser().getUsername());
                     }
 
-                    if (selectedTransfer.getTransferTypeId().equals(2)){
-                    System.out.println(leftpad("Type:", 18) + "Send");
-                    }
-                    else{
+                    if (selectedTransfer.getTransferTypeId().equals(2)) {
+                        System.out.println(leftpad("Type:", 18) + "Send");
+                    } else {
                         System.out.println(leftpad("Type:", 18) + "Received");
                     }
 
@@ -223,8 +220,6 @@ public class App {
             continue;
         }
 
-
-
         BigDecimal amount = console.promptForBigDecimal("Enter amount you would like to transfer \n");
 
         //Checks that the transfer amount doesn't exceed user's balance
@@ -251,7 +246,7 @@ public class App {
         System.out.println("\nYour transfer has been completed, your new balance is: $" + balance);
     }
 
-	private void requestBucks() {
+    private void requestBucks() {
         consoleService.nextUpdate();
     }
 
