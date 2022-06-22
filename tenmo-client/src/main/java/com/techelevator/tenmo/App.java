@@ -94,7 +94,7 @@ public class App {
                 System.out.println("\nThank you for using TEnmo, have a great day!");
                 continue;
             } else {
-                System.out.println("Invalid Selection");
+                System.out.println("\nInvalid Selection");
             }
             consoleService.pause();
         }
@@ -112,7 +112,6 @@ public class App {
                 "\nCurrent balance is: $" + balance +
                 "\n****************************");
         return;
-        //testing commit
     }
 
     //Displays the user's transfer history, listing the transfer ID, who it was from/to, and the amount of the transfer.
@@ -201,7 +200,7 @@ public class App {
         Transfer transfer = new Transfer();
         User[] users = transferService.listUsers(currentUser);
 
-        //Verifies there are users and if so, displays their account ID and their username
+        //Verifies there are other users and if so, displays their account IDs and their usernames
         if (users != null) {
             System.out.println("-------------------------------------\n" +
                     "Users\n" +
@@ -223,6 +222,8 @@ public class App {
             userTo = console.promptForInt("Cmon now, no infinite money glitch\n");
             continue;
         }
+
+
 
         BigDecimal amount = console.promptForBigDecimal("Enter amount you would like to transfer \n");
 
