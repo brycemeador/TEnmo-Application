@@ -112,6 +112,7 @@ public class App {
                 "\nCurrent balance is: $" + balance +
                 "\n****************************");
     }
+    //
 
     //Displays the user's transfer history, listing the transfer ID, who it was from/to, and the amount of the transfer.
     //User can then select a transfer using the transfer ID and it will display the full details about it.
