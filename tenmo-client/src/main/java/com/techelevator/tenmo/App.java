@@ -74,6 +74,10 @@ public class App {
         }
     }
 
+    private String leftpad(String text, int length) {        //lets me format a string to be a specific length
+        return String.format("%-" + length + "." + length + "s", text);
+    }
+
     private void mainMenu() {
         int menuSelection = -1;
         while (menuSelection != 0) {
